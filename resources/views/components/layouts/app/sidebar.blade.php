@@ -23,6 +23,10 @@
                     :current="request()->routeIs('categories')" wire:navigate>{{ __('Categories') }}</flux:navlist.item>
                 <flux:navlist.item icon="cake" :href="route('menus')" :current="request()->routeIs('menus')"
                     wire:navigate>{{ __('Menus') }}</flux:navlist.item>
+                <flux:navlist.item icon="cube" :href="route('payments')" :current="request()->routeIs('payments')"
+                    wire:navigate>{{ __('Payments') }}</flux:navlist.item>
+                <flux:navlist.item icon="book-open" :href="route('orders')" :current="request()->routeIs('order')"
+                    wire:navigate>{{ __('Orders') }}</flux:navlist.item>
             </flux:navlist.group>
 
         </flux:navlist>
@@ -56,7 +60,8 @@
                 <flux:menu.separator />
 
                 <flux:menu.radio.group>
-                    <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}
+                    <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
+                        {{ __('Settings') }}
                     </flux:menu.item>
                 </flux:menu.radio.group>
 

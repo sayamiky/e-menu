@@ -23,6 +23,13 @@ class Menu extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    /**
+     * Get the order items associated with the menu.
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }   
 
     /**
      * Scope a query to only include active menus.
