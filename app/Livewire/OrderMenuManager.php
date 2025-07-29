@@ -120,6 +120,34 @@ class OrderMenuManager extends Component
         session()->flash('message', "Added $qty item(s) to cart!");
     }
 
+    public function increaseQty($menuId)
+    {
+        if (!isset($this->quantities[$menuId])) {
+            $this->quantities[$menuId] = 1;
+        } else {
+            $this->quantities[$menuId]++;
+        }
+    }
+
+    public function decreaseQty($menuId)
+    {
+        if (!isset($this->quantities[$menuId])) {
+            $this->quantities[$menuId] = 1;
+        } else {
+            $this->quantities[$menuId] = max(1, $this->quantities[$menuId] - 1);
+        }
+    }
+    public function resetInput()
+    {
+        $this->orderItems = [];
+        $this->paymentId = null;
+        $this->customerName = '';
+        $this->customerPhone = '';
+        $this->customerEmail = '';
+        $this->selectedCategory = '';
+        $this->quantities = [];
+    }
+
     public function render()
     {
         return view('livewire.order-menu-manager')->layout('layouts.guest');
