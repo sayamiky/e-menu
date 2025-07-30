@@ -27,6 +27,7 @@ class OrderMenuManager extends Component
     public $customerEmail;
     public $selectedCategory = '';
     public $quantities = [];
+    public $cart = [];
 
 
     protected function rules()
@@ -115,9 +116,27 @@ class OrderMenuManager extends Component
 
     public function addToCart($menuId)
     {
+        // $qty = $this->quantities[$menuId] ?? 1;
+        // // Simpan ke session atau database sesuai logika kamu
+        // session()->flash('message', "Added $qty item(s) to cart!");
+        $menu = Menu::findOrFail($menuId);
         $qty = $this->quantities[$menuId] ?? 1;
-        // Simpan ke session atau database sesuai logika kamu
-        session()->flash('message', "Added $qty item(s) to cart!");
+
+        // Tambahkan atau update cart
+        if (isset($this->cart[$menuId])) {
+            $this->cart[$menuId]['quantity'] += $qty;
+        } else {
+            $this->cart[$menuId] = [
+                'id' => $menu->id,
+                'name' => $menu->name,
+                'price' => $menu->price,
+                'image' => $menu->image,
+                'quantity' => $qty,
+            ];
+        }
+
+        // Reset quantity input
+        $this->quantities[$menuId] = 1;
     }
 
     public function increaseQty($menuId)
@@ -137,6 +156,14 @@ class OrderMenuManager extends Component
             $this->quantities[$menuId] = max(1, $this->quantities[$menuId] - 1);
         }
     }
+
+    public function getSubtotalProperty()
+    {
+        return collect($this->cart)->sum(function ($item) {
+            return $item['qty'] * $item['price'];
+        });
+    }
+    
     public function resetInput()
     {
         $this->orderItems = [];
