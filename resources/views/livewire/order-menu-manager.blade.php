@@ -1,5 +1,4 @@
 <div class="max-w-5xl mx-auto p-8 text-gray-800 bg-gray-100 min-h-screen">
-
     {{-- HEADER --}}
     <div
         class="flex items-center justify-between bg-gradient-to-tr from-green-200 to-pink-400 rounded-3xl p-8 text-white mb-10 shadow-lg">
@@ -101,9 +100,11 @@
             <button @click="showCart = !showCart"
                 class="bg-green-900 text-white px-4 py-3 rounded-full shadow-lg flex items-center gap-2">
                 <span class="font-semibold">Cart</span>
-                <span class="text-sm">({{ array_sum($cartQuantities ?? []) }} items)</span>
-                @foreach (array_unique(array_column($cart ?? [], 'image')) as $img)
-                    <img src="{{ asset('storage/' . $img) }}" class="w-8 h-8 rounded-full border-2 border-white -ml-2">
+                <span class="text-sm">({{ collect($cart)->sum('quantity') ?? [] }} items) </span>
+                @foreach (array_unique(array_column($cart ?? [], 'image')) as $i => $img)
+                    <img src="{{ asset('storage/' . $img) }}"
+                        class="w-8 h-8 rounded-full border-2 border-white {{ $i > 0 ? '-ml-4' : '' }} shadow"
+                        style="z-index:{{ 10 - $i }};">
                 @endforeach
             </button>
         </div>
@@ -115,48 +116,57 @@
 
             @if (!empty($cart))
                 @foreach ($cart as $item)
-                {{-- {{dd($item)}} --}}
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <img src="{{ asset('storage/' . $item['image']) }}" class="w-12 h-12 rounded-full">
-                            <div>
-                                <div class="font-medium">{{ $item['name'] }}</div>
+                    <div
+                        class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 space-y-3 sm:space-y-0">
+                        <!-- Left: Image + Name -->
+                        <div class="flex items-start gap-3 flex-grow">
+                            <img src="{{ asset('storage/' . $item['image']) }}"
+                                class="w-12 h-12 rounded-full object-cover">
+                            <div class="min-w-0">
+                                <div class="font-medium break-words max-w-[180px] sm:max-w-none leading-snug">
+                                    {{ $item['name'] }}
+                                </div>
                                 <div class="text-sm text-gray-500">Rp {{ number_format($item['price'], 2) }}</div>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <button wire:click="decreaseQty({{ $item['id'] }})"
-                                class="w-8 h-8 flex justify-center items-center bg-gray-200 rounded-full text-lg">−</button>
-                            <span>{{ $item['quantity'] }}</span>
-                            <button wire:click="increaseQty({{ $item['id'] }})"
-                                class="w-8 h-8 flex justify-center items-center bg-gray-200 rounded-full text-lg">+</button>
-                        </div>
-                        <div class="font-semibold">
-                            Rp {{ number_format($item['price'] * $item['quantity'], 2) }}
+
+                        <!-- Middle: Quantity + Total (stack on mobile) -->
+                        <div
+                            class="flex justify-between items-center sm:items-center sm:justify-end sm:gap-4 w-full sm:w-auto">
+                            <!-- Quantity Controls -->
+                            <div class="flex items-center gap-2">
+                                <button wire:click="decreaseQty({{ $item['id'] }})"
+                                    class="w-8 h-8 flex justify-center items-center bg-gray-200 rounded-full text-lg">−</button>
+                                <span>{{ $item['quantity'] }}</span>
+                                <button wire:click="increaseQty({{ $item['id'] }})"
+                                    class="w-8 h-8 flex justify-center items-center bg-gray-200 rounded-full text-lg">+</button>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="text-right font-semibold w-24">
+                                Rp {{ number_format($item['price'] * $item['quantity'], 2) }}
+                            </div>
                         </div>
                     </div>
                 @endforeach
 
-                <hr class="my-4">
-                <div class="flex justify-between text-base mb-2">
-                    <span>Subtotal</span>
-                     <span>Rp </span>
-                    {{-- <span>Rp {{ number_format($subtotal, 2) }}</span> --}}
-                </div>
-                <div class="flex justify-between font-bold text-lg mb-4">
-                    <span>Total</span>
-                    <span>Rp </span>
-                </div>
+                <div class="p-4 pb-28"> <!-- Add large bottom padding -->
+                    <hr class="my-4">
+                    <div class="flex justify-between font-bold text-lg mb-4">
+                        <span>Total</span>
+                        <span>Rp {{ number_format($this->total, 2) }}</span>
+                    </div>
 
-                <button
-                    class="w-full bg-orange-500 text-white py-3 rounded-xl text-lg font-semibold hover:bg-orange-600 transition">Checkout</button>
+                    <button
+                        class="w-full bg-orange-500 text-white py-3 rounded-xl text-lg font-semibold hover:bg-orange-600 transition">
+                        Checkout
+                    </button>
+                </div>
             @else
                 <p class="text-gray-500 text-center">Cart is empty.</p>
             @endif
         </div>
     </div>
-
-
 
     @if ($menus->isEmpty())
         <p class="text-center text-gray-500 mt-16 text-lg">No menu items found.</p>

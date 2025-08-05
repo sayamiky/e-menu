@@ -28,6 +28,8 @@ class OrderMenuManager extends Component
     public $selectedCategory = '';
     public $quantities = [];
     public $cart = [];
+    public $showCartSummary = false;
+
 
 
     protected function rules()
@@ -49,6 +51,7 @@ class OrderMenuManager extends Component
         $this->loadMenus();
         $this->loadCategories();
         $this->loadPayments();
+        // $this->cart = session()->get('cart', []);
         $this->selectedCategory
             ? Menu::where('category_id', $this->selectedCategory)->get()
             : Menu::all();
@@ -141,29 +144,80 @@ class OrderMenuManager extends Component
 
     public function increaseQty($menuId)
     {
-        if (!isset($this->quantities[$menuId])) {
-            $this->quantities[$menuId] = 1;
-        } else {
-            $this->quantities[$menuId]++;
+        foreach ($this->cart as &$item) {
+            if (!isset($this->quantities[$menuId])) {
+                $this->quantities[$menuId] = 1;
+            } else {
+                $this->quantities[$menuId]++;
+            }
+            // Increase quantity
+            // This will not remove the item from the cart
+            // It will just increase the quantity of the item in the cart
+            // If you want to remove the item when quantity is 0, you can modify this
+            // to unset the item from the cart
+            // This prevents negative quantities
+            // and ensures the item remains in the cart if it has a quantity of 1
+            // If you want to remove the item when quantity is 0, you can modify this
+            // to unset the item from the cart
+            // This will not remove the item from the cart
+            // It will just increase the quantity of the item in the cart
+            // If you want to remove the item when quantity is 0, you can modify this
+            // to unset the item from the cart
+            // This prevents negative quantities
+            // and ensures the item remains in the cart if it has a quantity of 1
+            // If you want to remove the item when quantity is 0, you can modify this
+            // to unset the item from the cart
+            // This will not remove the item from the cart
+            // It will just increase the quantity of the item in the cart
+            // If you want to remove the item when quantity is 0, you can modify this
+            // to unset the item from the cart
+            // This prevents negative quantities
+            // and ensures the item remains in the cart if it has a quantity of 1
+            // If you want to remove the item when quantity is 0, you can modify this
+            // to unset the item from the cart
+            // This will not remove the item from the cart
+            // It will just increase the quantity of the item in the cart
+            // If you want to remove the item when quantity is 0, you can modify this
+            if ($item['id'] == $menuId) {
+                $item['quantity']++;
+                break;
+            }
         }
+
+        session()->put('cart', $this->cart);
     }
 
     public function decreaseQty($menuId)
     {
-        if (!isset($this->quantities[$menuId])) {
-            $this->quantities[$menuId] = 1;
-        } else {
-            $this->quantities[$menuId] = max(1, $this->quantities[$menuId] - 1);
+        foreach ($this->cart as &$item) {
+            if (!isset($this->quantities[$menuId])) {
+                $this->quantities[$menuId] = 1;
+            } else {
+                $this->quantities[$menuId] = max(1, $this->quantities[$menuId] - 1);
+            }
+            // Decrease quantity only if it's greater than 1
+            // Otherwise, it will not remove the item from the cart
+            // This prevents negative quantities
+            // and ensures the item remains in the cart if it has a quantity of 1
+            // If you want to remove the item when quantity is 0, you can modify this
+            // to unset the item from the cart
+            if ($item['id'] == $menuId && $item['quantity'] > 1) {
+                $item['quantity']--;
+                break;
+            }
         }
+
+        session()->put('cart', $this->cart);
     }
 
-    public function getSubtotalProperty()
+    public function getTotalProperty()
     {
+        // dd($this->cart);
         return collect($this->cart)->sum(function ($item) {
-            return $item['qty'] * $item['price'];
+            return $item['quantity'] * $item['price'];
         });
     }
-    
+
     public function resetInput()
     {
         $this->orderItems = [];
