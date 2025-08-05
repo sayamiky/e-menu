@@ -158,26 +158,6 @@ class OrderMenuManager extends Component
             // This prevents negative quantities
             // and ensures the item remains in the cart if it has a quantity of 1
             // If you want to remove the item when quantity is 0, you can modify this
-            // to unset the item from the cart
-            // This will not remove the item from the cart
-            // It will just increase the quantity of the item in the cart
-            // If you want to remove the item when quantity is 0, you can modify this
-            // to unset the item from the cart
-            // This prevents negative quantities
-            // and ensures the item remains in the cart if it has a quantity of 1
-            // If you want to remove the item when quantity is 0, you can modify this
-            // to unset the item from the cart
-            // This will not remove the item from the cart
-            // It will just increase the quantity of the item in the cart
-            // If you want to remove the item when quantity is 0, you can modify this
-            // to unset the item from the cart
-            // This prevents negative quantities
-            // and ensures the item remains in the cart if it has a quantity of 1
-            // If you want to remove the item when quantity is 0, you can modify this
-            // to unset the item from the cart
-            // This will not remove the item from the cart
-            // It will just increase the quantity of the item in the cart
-            // If you want to remove the item when quantity is 0, you can modify this
             if ($item['id'] == $menuId) {
                 $item['quantity']++;
                 break;
@@ -210,13 +190,13 @@ class OrderMenuManager extends Component
         session()->put('cart', $this->cart);
     }
 
-    public function getTotalProperty()
-    {
-        // dd($this->cart);
-        return collect($this->cart)->sum(function ($item) {
-            return $item['quantity'] * $item['price'];
-        });
-    }
+    // public function getTotalProperty()
+    // {
+    //     // dd($this->cart);
+    //     return collect($this->cart)->sum(function ($item) {
+    //         return $item['quantity'] * $item['price'];
+    //     });
+    // }
 
     public function resetInput()
     {
