@@ -116,10 +116,10 @@
                             class="flex justify-between items-center sm:items-center sm:justify-end sm:gap-4 w-full sm:w-auto">
                             <div class="flex items-center gap-2">
                                 <button wire:click="decreaseQty({{ $item['id'] }})"
-                                    class="w-8 h-8 flex justify-center items-center bg-gray-200 rounded-full text-lg">&minus;</button>
+                                    class="w-8 h-8 flex justify-center items-center bg-green-900 rounded-full text-lg text-white">&minus;</button>
                                 <span>{{ $item['quantity'] }}</span>
                                 <button wire:click="increaseQty({{ $item['id'] }})"
-                                    class="w-8 h-8 flex justify-center items-center bg-gray-200 rounded-full text-lg">&#43;</button>
+                                    class="w-8 h-8 flex justify-center items-center bg-green-900 rounded-full text-lg text-white">&#43;</button>
                             </div>
                             <div class="text-right font-semibold w-24">Rp
                                 {{ number_format($item['price'] * $item['quantity'], 2) }}</div>
@@ -133,10 +133,53 @@
                         <span>Rp
                             {{ number_format(collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']), 2) }}</span>
                     </div>
-                    <button
-                        class="w-full bg-orange-500 text-white py-3 rounded-xl text-lg font-semibold hover:bg-orange-600 transition">Checkout</button>
-                    <button @click="showCart = false"
-                        class="mt-4 w-full text-sm text-gray-500 hover:text-gray-700">Close</button>
+                    {{-- <button wire:click="checkout"
+                        class="w-full bg-orange-500 text-white py-3 rounded-xl text-lg font-semibold hover:bg-orange-600 transition">Checkout</button> --}}
+                    <div class="mt-4">
+                        <!-- Replace Checkout button with this -->
+                        <div x-data="{ paymentStep: 'cart' }">
+                            <!-- Step 1: Cart Checkout Button -->
+                            <div x-show="paymentStep === 'cart'">
+                                <button @click="paymentStep = 'payment'"
+                                    class="w-full bg-green-900 text-white py-3 rounded-xl text-lg font-semibold hover:bg-orange-600 transition">
+                                    Checkout
+                                </button>
+                            </div>
+
+                            <!-- Step 2: Choose Payment Method -->
+                            <div x-show="paymentStep === 'payment'" x-transition>
+                                <h4 class="text-lg font-bold mb-4">Choose Payment Method</h4>
+                                <div class="space-y-3">
+                                    <button @click="alert('Cash selected')"
+                                        class="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition">
+                                        💵 Cash
+                                    </button>
+                                    <button @click="alert('Credit Card selected')"
+                                        class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">
+                                        💳 Credit Card
+                                    </button>
+                                    <button @click="alert('QR Payment selected')"
+                                        class="w-full bg-purple-600 text-white py-3 rounded-xl font-semibold hover:bg-purple-700 transition">
+                                        📱 QR Code
+                                    </button>
+                                </div>
+                                <div class="flex justify-between mt-4">
+                                    {{-- <div class="flex justify-center gap-8 mt-4"> --}}
+                                    <button @click="paymentStep = 'cart'"
+                                        class="text-sm text-gray-900 hover:text-green-900">
+                                        Back to Cart
+                                    </button>
+                                    <button @click="showCart = false" class="text-sm text-gray-900 hover:text-red-700">
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- @if (paymentStep === 'payment')
+                        <button @click="showCart = true"
+                            class="mt-4 w-full text-sm text-gray-500 hover:text-gray-700">Close</button>
+                    @endif --}}
                 </div>
             </div>
         </div>

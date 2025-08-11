@@ -29,7 +29,8 @@ class OrderMenuManager extends Component
     public $quantities = [];
     public $cart = [];
     public $showCartSummary = false;
-
+    public $paymentStep = 'cart';
+    public $paymentMethod;
 
 
     protected function rules()
@@ -100,6 +101,9 @@ class OrderMenuManager extends Component
         }
 
         $this->resetInput();
+        $this->resetCart();
+        session()->flash('message', 'Order placed successfully!');
+        return redirect()->route('order.success');
     }
 
     public function loadMenus()
@@ -165,7 +169,7 @@ class OrderMenuManager extends Component
         }
 
         session()->put('cart', $this->cart);
-    }
+    } 
 
     public function decreaseQty($menuId)
     {
@@ -190,13 +194,11 @@ class OrderMenuManager extends Component
         session()->put('cart', $this->cart);
     }
 
-    // public function getTotalProperty()
-    // {
-    //     // dd($this->cart);
-    //     return collect($this->cart)->sum(function ($item) {
-    //         return $item['quantity'] * $item['price'];
-    //     });
-    // }
+    public function checkout()
+    {
+        // Switch to payment selection step
+        $this->paymentStep = 'payment';
+    }
 
     public function resetInput()
     {
