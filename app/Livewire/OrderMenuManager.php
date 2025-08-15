@@ -31,19 +31,19 @@ class OrderMenuManager extends Component
     public $showCartSummary = false;
     public $paymentStep = 'cart';
     public $paymentMethod;
-
+    protected $listeners = ['paymentSelected' => 'choosePayment'];
 
     protected function rules()
     {
         return [
-            'orderItems' => 'required|array|min:1',
-            'orderItems.*.menu_id' => 'required|exists:menus,id',
-            'orderItems.*.quantity' => 'required|integer|min:1',
-            'orderItems.*.note' => 'nullable|string|max:255',
+            'cart' => 'required|array|min:1',
+            'cart.*.menu_id' => 'required|exists:menus,id',
+            'cart.*.quantity' => 'required|integer|min:1',
+            // 'cart.*.note' => 'nullable|string|max:255',
             'paymentId' => 'required|exists:payments,id',
-            'customerName' => 'nullable|string|min:2',
-            'customerPhone' => 'nullable|string|min:8',
-            'customerEmail' => 'nullable|email|max:255',
+            // 'customerName' => 'nullable|string|min:2',
+            // 'customerPhone' => 'nullable|string|min:8',
+            // 'customerEmail' => 'nullable|email|max:255',
         ];
     }
 
@@ -63,8 +63,15 @@ class OrderMenuManager extends Component
         $this->validateOnly($property); // ✅ Real-time validation
     }
 
+    public function choosePayment($paymentId)
+    {
+        $this->paymentId = $paymentId;
+        $this->save();
+    }
+
     public function save()
     {
+        // dd($this->cart);
         $this->validate();
 
         // Create Order
@@ -89,7 +96,7 @@ class OrderMenuManager extends Component
         }
 
         // Attach order items
-        foreach ($this->orderItems as $item) {
+        foreach ($this->cart as $item) {
             OrderItem::create([
                 'order_id' => $order->order_number,
                 'menu_id' => $item['menu_id'],
@@ -101,9 +108,8 @@ class OrderMenuManager extends Component
         }
 
         $this->resetInput();
-        $this->resetCart();
         session()->flash('message', 'Order placed successfully!');
-        return redirect()->route('order.success');
+        // return redirect()->route('order.success');
     }
 
     public function loadMenus()
@@ -134,7 +140,7 @@ class OrderMenuManager extends Component
             $this->cart[$menuId]['quantity'] += $qty;
         } else {
             $this->cart[$menuId] = [
-                'id' => $menu->id,
+                'menu_id' => $menu->id,
                 'name' => $menu->name,
                 'price' => $menu->price,
                 'image' => $menu->image,
@@ -162,7 +168,7 @@ class OrderMenuManager extends Component
             // This prevents negative quantities
             // and ensures the item remains in the cart if it has a quantity of 1
             // If you want to remove the item when quantity is 0, you can modify this
-            if ($item['id'] == $menuId) {
+            if ($item['menu_id'] == $menuId) {
                 $item['quantity']++;
                 break;
             }
@@ -185,7 +191,7 @@ class OrderMenuManager extends Component
             // and ensures the item remains in the cart if it has a quantity of 1
             // If you want to remove the item when quantity is 0, you can modify this
             // to unset the item from the cart
-            if ($item['id'] == $menuId && $item['quantity'] > 1) {
+            if ($item['menu_id'] == $menuId && $item['quantity'] > 1) {
                 $item['quantity']--;
                 break;
             }
@@ -216,3 +222,4 @@ class OrderMenuManager extends Component
         return view('livewire.order-menu-manager')->layout('layouts.guest');
     }
 }
+ 

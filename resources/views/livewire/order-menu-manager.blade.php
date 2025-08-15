@@ -115,10 +115,10 @@
                         <div
                             class="flex justify-between items-center sm:items-center sm:justify-end sm:gap-4 w-full sm:w-auto">
                             <div class="flex items-center gap-2">
-                                <button wire:click="decreaseQty({{ $item['id'] }})"
+                                <button wire:click="decreaseQty({{ $item['menu_id'] }})"
                                     class="w-8 h-8 flex justify-center items-center bg-green-900 rounded-full text-lg text-white">&minus;</button>
                                 <span>{{ $item['quantity'] }}</span>
-                                <button wire:click="increaseQty({{ $item['id'] }})"
+                                <button wire:click="increaseQty({{ $item['menu_id'] }})"
                                     class="w-8 h-8 flex justify-center items-center bg-green-900 rounded-full text-lg text-white">&#43;</button>
                             </div>
                             <div class="text-right font-semibold w-24">Rp
@@ -150,7 +150,14 @@
                             <div x-show="paymentStep === 'payment'" x-transition>
                                 <h4 class="text-lg font-bold mb-4">Choose Payment Method</h4>
                                 <div class="space-y-3">
-                                    <button @click="alert('Cash selected')"
+                                    @foreach ($payments as $payment)
+                                        <button
+                                            onclick="confirmPayment({{ $payment->id }}, '{{ ucwords($payment->payment_method) }}')"
+                                            class="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-semibold hover:bg-gray-200 transition">
+                                            {!! $payment->image !!} {{ ucwords($payment->payment_method) }}
+                                        </button>
+                                    @endforeach
+                                    {{-- <button @click="alert('Cash selected')"
                                         class="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition">
                                         💵 Cash
                                     </button>
@@ -161,7 +168,7 @@
                                     <button @click="alert('QR Payment selected')"
                                         class="w-full bg-purple-600 text-white py-3 rounded-xl font-semibold hover:bg-purple-700 transition">
                                         📱 QR Code
-                                    </button>
+                                    </button> --}}
                                 </div>
                                 <div class="flex justify-between mt-4">
                                     {{-- <div class="flex justify-center gap-8 mt-4"> --}}
@@ -189,3 +196,12 @@
         <p class="text-center text-gray-500 mt-16 text-lg">No menu items found.</p>
     @endif
 </div>
+<script>
+    function confirmPayment(paymentId, paymentName) {
+        if (confirm(`Yakin mau pilih metode pembayaran: ${paymentName}?`)) {
+            Livewire.dispatch('paymentSelected', {
+                paymentId: paymentId
+            });
+        }
+    }
+</script>
